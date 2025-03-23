@@ -1,0 +1,102 @@
+#include <SoftwareSerial.h>
+#include <Servo.h>
+
+// Define motor driver pins
+#define IN1 5
+#define IN2 6
+#define IN3 9
+#define IN4 10
+
+// Define brush and water pump pins
+#define BRUSH_MOTOR 7
+#define WATER_PUMP 8
+
+// Bluetooth module RX & TX pins
+SoftwareSerial Bluetooth(2, 3);
+
+void setup() {
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
+    pinMode(BRUSH_MOTOR, OUTPUT);
+    pinMode(WATER_PUMP, OUTPUT);
+    
+    Bluetooth.begin(9600);
+    Serial.begin(9600);
+}
+
+void loop() {
+    if (Bluetooth.available()) {
+        char command = Bluetooth.read();
+        Serial.println(command);
+        
+        switch (command) {
+            case 'F': // Move Forward
+                moveForward();
+                break;
+            case 'B': // Move Backward
+                moveBackward();
+                break;
+            case 'L': // Turn Left
+                turnLeft();
+                break;
+            case 'R': // Turn Right
+                turnRight();
+                break;
+            case 'S': // Stop
+                stopMotors();
+                break;
+            case 'W': // Activate Water Pump
+                digitalWrite(WATER_PUMP, HIGH);
+                break;
+            case 'w': // Deactivate Water Pump
+                digitalWrite(WATER_PUMP, LOW);
+                break;
+            case 'B': // Activate Brush Motor
+                digitalWrite(BRUSH_MOTOR, HIGH);
+                break;
+            case 'b': // Deactivate Brush Motor
+                digitalWrite(BRUSH_MOTOR, LOW);
+                break;
+            default:
+                stopMotors();
+                break;
+        }
+    }
+}
+
+void moveForward() {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+}
+
+void moveBackward() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+}
+
+void turnLeft() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+}
+
+void turnRight() {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+}
+
+void stopMotors() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+}
